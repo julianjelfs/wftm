@@ -11,189 +11,283 @@
             background-repeat: no-repeat;
             display: inline-block;
         }
-        div.dice2 {
-            background-position: -33px 0px;
-        }
-        div.dice3 {
-            background-position: -66px 0px;
-        }
-        div.dice4 {
-            background-position: 0px -33px;
-        }
-        div.dice5 {
-            background-position: -35px -33px;
-        }
-        div.dice6 {
-            background-position: -68px -35px;
-        }
+        div.dice2 { background-position: -33px 0px; }
+        div.dice3 { background-position: -66px 0px; }
+        div.dice4 { background-position: 0px -34px; }
+        div.dice5 { background-position: -35px -34px; }
+        div.dice6 { background-position: -68px -34px; }
     </style>
 </head>
-<body style="padding:10px" class="container well" ng-app ng-controller="WarlockCtrl">
+<body style="padding:10px" ng-app="App" ng-controller="WarlockCtrl">
     
-    <h1>Warlock of Firetop Mountain</h1>
-    
-    <div class="row">
-        <div class="span6">
-            <fieldset>
-                <legend>Initial Scores</legend>
-                <div>Stamina: {{Initial.Stamina}}</div>
-                <div>Skill: {{Initial.Skill}}</div>
-                <div>Luck: {{Initial.Luck}}</div>
-                <div>Provisions: {{Initial.Provisions}}</div>
-            </fieldset> 
+    <div class="container well" ng-cloak >
+        <div class="pull-right btn-group">
+            <a class="btn" ng-show="supportSave()" ng-click="save()">Save Game</a>
+            <a class="btn" ng-show="supportSave()" ng-click="newGame()">New Game</a>
+            <a class="btn" ng-click="eat()">Eat</a>
+            <a class="btn" ng-disabled="Current.Luck <= 0" ng-click="testLuck()">Test Luck</a>
         </div>
+        <h2>Warlock of Firetop Mountain</h1>
+
+        <div class="row">
+            <div class="span5">
+                <fieldset>
+                    <legend>Initial Scores</legend>
+                    <h4>Stamina: {{Initial.Stamina}}</h4>
+                    <h4>Skill: {{Initial.Skill}}</h4>
+                    <h4>Luck: {{Initial.Luck}}</h4>
+                    <h4>Provisions: {{Initial.Provisions}}</h4>
+                </fieldset> 
+            </div>
         
-        <div class="span6">
-            <fieldset>
-                <legend>Current Scores</legend>
-                <table class="table table-condensed">
+            <div class="span7">
+                <fieldset>
+                    <legend>Current Scores</legend>
+                    <table class="table table-condensed">
+                        <tr>
+                            <td>Stamina</td>    
+                            <td colspan="2">
+                                <div class="input-append">
+                                    <input type="number" ng-model="Current.Stamina" ng-change="changeVal('Stamina')" /> 
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Skill</td> 
+                            <td colspan="2"><input type="number" ng-model="Current.Skill" ng-change="changeVal('Skill')"/></td>    
+                        </tr>
+                        <tr ng-style="luckyOrNot">
+                            <td>Luck</td>    
+                            <td>
+                                <input type="number" ng-model="Current.Luck" ng-change="changeVal('Luck')"/>
+                            </td>
+                            <td style="width:100px">
+                                <div ng-show="luckScore != null">
+                                    <div ng-class="diceClass(luckScore.roll1)"></div>
+                                    <div ng-class="diceClass(luckScore.roll2)"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Provisions</td>    
+                            <td colspan="2"><input type="number" readonly="true" ng-model="Current.Provisions"/></td>
+                        </tr>
+                    </table>
+                </fieldset>
+            </div>
+        </div>
+    
+        <div class="row">
+            <div class="span12">
+                <a href="" class="btn" ng-click="addMonster()">Monster!</a>
+                <p></p>
+                <table ng-show="Monsters.length > 0" class="table table-condensed">
                     <tr>
-                        <td>Stamina</td>    
-                        <td>
-                            <div class="input-append">
-                                <input type="number" ng-model="Current.Stamina" ng-change="changeVal('Stamina')" /> <a href="" class="btn" ng-click="eat()">Eat</a>
-                            </div>
-                        </td>
+                        <th>Name</th>
+                        <th>Skill</th>
+                        <th>Stamina</th>
+                        <th></th>
+                        <th></th>
                     </tr>
-                    <tr>
-                        <td>Skill</td> 
-                        <td><input type="number" ng-model="Current.Skill" ng-change="changeVal('Skill')"/></td>    
-                    </tr>
-                    <tr>
-                        <td>Luck</td>    
-                        <td><input type="number" ng-model="Current.Luck" ng-change="changeVal('Luck')"/></td>
-                    </tr>
-                    <tr>
-                        <td>Provisions</td>    
-                        <td><input type="number" readonly="true" ng-model="Current.Provisions"/></td>
-                    </tr>
+                    <tbody ng-disabled="monster.Dead" ng-repeat="monster in Monsters">
+                        <tr>
+                            <td><input ng-disabled="monster.Dead" type="text" placeholder="Enter monster name" ng-model="monster.Name" /></td>
+                            <td><input ng-disabled="monster.Dead" type="number" ng-model="monster.Skill" /></td>
+                            <td><input ng-disabled="monster.Dead" type="number" ng-model="monster.Stamina" /></td>
+                            <td><a ng-disabled="monster.Dead || Current.Luck <= 0" title="click this button to toggle whether or not to use luck for the next round of the battle" href="" ng-class="usingLuckClass(monster)" ng-click="toggleLuck(monster)">Luck</a></td>
+                            <td><a ng-disabled="monster.Dead" href="" class="btn" ng-click="fightMonster(monster)">Fight!</a></td>
+                        </tr>
+                        <tr ng-show="!monster.Dead" >
+                            <td>
+                                <h4> Your attack score is {{monster.Round.you.score}}</h4>  
+                                <div ng-class="diceClass(monster.Round.you.roll1)"></div>
+                                <div ng-class="diceClass(monster.Round.you.roll2)"></div>
+                            </td>
+                            <td>
+                                <h4> {{monster.Name}} attack score is {{monster.Round.monster.score}}</h4>
+                                <div ng-class="diceClass(monster.Round.monster.roll1)"></div>
+                                <div ng-class="diceClass(monster.Round.monster.roll2)"></div>
+                            </td>
+                            <td colspan="3">
+                                <h4>{{monster.Status}}</h4>
+                            </td>
+                        </tr>
+                    </tbody>
                 </table>
-            </fieldset>
+            </div>
         </div>
     </div>
-    
-    
-    
-    <div class="row">
-        <div class="span12">
-            <a href="" class="btn" ng-click="addMonster()">Monster!</a>
-            <p></p>
-            <table ng-show="Monsters.length > 0" class="table table-condensed">
-                <tr>
-                    <th>Name</th>
-                    <th>Skill</th>
-                    <th>Stamina</th>
-                    <th></th>
-                    <th></th>
-                </tr>
-                <tbody ng-disabled="monster.Dead" ng-repeat="monster in Monsters">
-                    <tr>
-                        <td><input ng-disabled="monster.Dead" type="text" placeholder="Enter monster name" ng-model="monster.Name" /></td>
-                        <td><input ng-disabled="monster.Dead" type="number" ng-model="monster.Skill" /></td>
-                        <td><input ng-disabled="monster.Dead" type="number" ng-model="monster.Stamina" /></td>
-                        <td><a ng-disabled="monster.Dead" href="" class="btn" ng-click="fightMonster(monster)">Fight!</a></td>
-                    </tr>
-                    <tr ng-show="!monster.Dead" >
-                        <td>
-                            <h4> Your attack score is {{attack.you.attackScore(Current.Skill)}}</h4>  
-                            <div ng-class="diceClass(attack.you.roll1)"></div>
-                            <div ng-class="diceClass(attack.you.roll2)"></div>
-                        </td>
-                        <td>
-                            <h4> {{monster.Name}} attack score is {{attack.monster.attackScore(monster.Skill)}}</h4>
-                            <div ng-class="diceClass(attack.monster.roll1)"></div>
-                            <div ng-class="diceClass(attack.monster.roll2)"></div>
-                        </td>
-                        <td>
-                            <h4>{{statusMessage}}</h4>
-                        </td>
-                        <td colspan="2"></td>
-                    </tr>
-                </tbody>
-             </table>
-        </div>
-    </div>
-    
 
 </body>
 <script src="Scripts/jquery-1.9.1.js" type="text/javascript"></script>
     <script src="Scripts/angular.js" type="text/javascript"></script>
+    <script src="Scripts/localStorageModule.js" type="text/javascript"></script>
     <script type="text/javascript">
-        
-        var WarlockCtrl = function($scope) {
-            $scope.Initial = {
-                Stamina: rollDice() + rollDice() + 12,
-                Skill: rollDice() + 6,
-                Luck: rollDice() + 6,
-                Provisions : 10
-            };
 
-            $scope.Monsters = [];
-            $scope.yourAttackScore = 0;
-            $scope.monsterAttackScore = 0;
-            $scope.statusMessage = '';
+        var app = angular.module("App", ["LocalStorageModule"]);
+
+        app.controller("WarlockCtrl", function($scope, $window, localStorageService) {
+            if (localStorageService.isSupported()) {
+                var data = localStorageService.get("wftmdata");
+                if (data != null) {
+                    data = JSON.parse(data);
+                    $scope.Initial = data.Initial;
+                    $scope.Current = data.Current;
+                    $scope.Monsters = data.Monsters;
+                } else {
+                    initialise();
+                }
+            } else {
+                initialise();
+            }
+
+            $scope.supportSave = function(){
+                return localStorageService.isSupported();
+            }
+
+            $scope.testLuck = function(){
+                if($scope.Current.Luck <= 0)
+                    return;
+
+                $scope.lucky();
+            }
+
+            $scope.lucky = function(){
+                $scope.luckScore = {
+                    roll1 : rollDice(),
+                    roll2 : rollDice()
+                }
+                var luck = $scope.Current.Luck;
+                $scope.Current.Luck -= 1;
+                var wasLucky = ($scope.luckScore.roll1 + $scope.luckScore.roll2) <= luck;
+                $scope.luckyOrNot = {backgroundColor : wasLucky ? "#99ff66" : "#ff6600"};
+                return wasLucky;
+            }
+
+            $scope.newGame = function(){
+                localStorageService.remove("wftmdata");
+                initialise();
+            }
             
-            $scope.Current = angular.copy($scope.Initial);
-            
+            $scope.save = function() {
+                if (localStorageService.isSupported()) {
+                    var data = {
+                        Initial : $scope.Initial,
+                        Current : $scope.Current,
+                        Monsters : $scope.Monsters,
+                        attack : $scope.attack,
+                        usingLuck : $scope.usingLuck
+                    }
+                    if(localStorageService.get("wftmdata") != null){
+                        localStorageService.remove("wftmdata");
+                    }
+                    localStorageService.add("wftmdata", JSON.stringify(data));
+                }
+            }
+
+            function initialise() {
+                $scope.Initial = {
+                    Stamina: rollDice() + rollDice() + 12,
+                    Skill: rollDice() + 6,
+                    Luck: rollDice() + 6,
+                    Provisions: 10
+                };    
+                $scope.Monsters = [];
+                $scope.Current = angular.copy($scope.Initial);
+                $scope.luckyOrNot = {backgroundColor : 'none'};
+            }
+
             $scope.addMonster = function() {
                 $scope.Monsters.push({
                     Skill: 10,
                     Stamina: 12,
                     Name: '',
-                    Dead: false
+                    Dead: false,
+                    Luck : false,
+                    Status : '',
+                    Round : {
+                        you : { roll1 : 1, roll2 : 1, score : 0},
+                        monster : { roll1 : 1, roll2 : 1, score : 0}
+                    }
                 });
             }
-            
+
+            $scope.toggleLuck = function(monster) {
+                if($scope.Current.Luck <= 0)
+                    return;
+                monster.Luck = !monster.Luck;
+            }
+
+            $scope.usingLuckClass = function(monster) {
+                if($scope.Current.Luck <= 0)
+                    monster.Luck = false;
+                return monster.Luck ? "btn btn-danger" : "btn";
+            }
+
             $scope.diceClass = function(num) {
                 return "dice dice" + num;
             }
 
-            $scope.attack = { you: { roll1: 1, roll2: 1 }, monster: { roll1: 1, roll2: 1 } };
-
             $scope.fightMonster = function(monster) {
                 if (monster.Dead)
                     return;
-                
-                $scope.attack = {
-                    you : {
-                        roll1 : rollDice(),
-                        roll2 : rollDice(),
-                        attackScore : function (skill) { return this.roll1 + this.roll2 + skill;}
+
+                monster.Round = {
+                    you: {
+                        roll1: rollDice(),
+                        roll2: rollDice()
                     },
-                    monster : {
-                        roll1 : rollDice(),
-                        roll2 : rollDice(),
-                        attackScore : function (skill) { return this.roll1 + this.roll2 + skill;}
+                    monster: {
+                        roll1: rollDice(),
+                        roll2: rollDice()
                     }
                 }
+                monster.Status = "";
 
-                $scope.yourAttackScore = $scope.attack.you.attackScore($scope.Current.Skill);
-                $scope.monsterAttackScore = $scope.attack.monster.attackScore(monster.Skill);
+                monster.Round.you.score = monster.Round.you.roll1 + monster.Round.you.roll2 + $scope.Current.Skill;
+                monster.Round.monster.score = monster.Round.monster.roll1 + monster.Round.monster.roll2 + monster.Skill;
 
-                if ($scope.yourAttackScore > $scope.monsterAttackScore) {
+                if (monster.Round.you.score > monster.Round.monster.score) {
                     monster.Stamina -= 2;
                     if (monster.Stamina <= 0) {
                         monster.Dead = true;
-                        $scope.statusMessage = 'Hurrah you killed the monster';
+                        monster.Status = 'Hurrah you killed the monster';
                     } else {
-                        $scope.statusMessage = 'Hurrah you wounded the monster!';
+                        monster.Status = 'Hurrah you wounded the monster!';
+                        if(monster.Luck && $scope.Current.Luck > 0){
+                            if($scope.lucky()){
+                                monster.Stamina -= 2;
+                                monster.Status += " and luck was on your side";
+                            } else {
+                                monster.Status += " but you were not lucky";
+                            }
+                        }
                     }
                 }
-                
-                if ($scope.yourAttackScore < $scope.monsterAttackScore) {
+
+                if (monster.Round.you.score < monster.Round.monster.score) {
                     $scope.Current.Stamina -= 2;
+                    if(monster.Luck && $scope.Current.Luck > 0){
+                        if($scope.lucky()){
+                            $scope.Current.Stamina += 1;
+                            monster.Status = "Luck was on your side. ";
+                        } else {
+                            monster.Status = "Luck was not on your side. ";
+                        }
+                    }
+
                     if ($scope.Current.Stamina <= 0) {
-                        $scope.statusMessage = "Gah - you've been killed";
+                        monster.Status += "Gah - you've been killed";
                     } else {
-                        $scope.statusMessage = 'Boo the monster wounded you!';
+                        monster.Status += 'Boo the monster wounded you!';
                     }
                 }
-                
-                if ($scope.yourAttackScore == $scope.monsterAttackScore) {
-                    $scope.statusMessage = "Your attack scores were equal - fight again";
+
+                if (monster.Round.you.score == monster.Round.monster.score) {
+                    monster.Status += "Your attack scores were equal - fight again";
                 }
             }
-            
+
             $scope.deleteMonster = function(monster) {
                 var index = -1;
                 angular.forEach($scope.Monsters, function(m, i) {
@@ -205,14 +299,14 @@
                     $scope.Monsters.splice(index, 1);
                 }
             }
-            
-            
+
+
             $scope.changeVal = function(prop) {
                 if ($scope.Current[prop] > $scope.Initial[prop]) {
                     $scope.Current[prop] = $scope.Initial[prop];
                 }
             }
-            
+
             $scope.eat = function() {
                 if ($scope.Current.Provisions > 0
                     && $scope.Current.Stamina < $scope.Initial.Stamina) {
@@ -227,7 +321,7 @@
                 var max = 6;
                 return Math.floor(Math.random() * (max - min + 1)) + min;
             }
-        }
+        });
 
     </script>
 </html>
