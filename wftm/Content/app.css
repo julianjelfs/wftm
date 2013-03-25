@@ -1,0 +1,12 @@
+﻿div.dice {
+    background-image: url("Content/images/Dice.png");
+    width: 32px;
+    height: 32px;
+    background-repeat: no-repeat;
+    display: inline-block;
+}
+div.dice2 { background-position: -33px 0px; }
+div.dice3 { background-position: -66px 0px; }
+div.dice4 { background-position: 0px -34px; }
+div.dice5 { background-position: -35px -34px; }
+div.dice6 { background-position: -68px -34px; }
