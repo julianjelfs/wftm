@@ -1,5 +1,30 @@
 ﻿var app = angular.module("App", ["LocalStorageModule"]);
 
+app.directive("ngModal", function() {
+    return {
+        replace : true,
+        scope : {
+            title : "@",
+            content : "@",
+            dismissButton : "@",
+            localModel : "&ngModal",
+            dismiss : "&"
+        },
+        template : "<div class='modal hide fade'><div class='modal-header'><h3>{{title}}</h3></div><div class='modal-body'><p>{{content}}</p></div><div class='modal-footer'><a class='btn btn-danger' ng-click='close()'>{{dismissButton}}</a></div></div>",
+        link : function(scope, elem) {
+            scope.$watch(scope.localModel, function(newVal) {
+                if (newVal <= 0) {
+                    elem.modal("show");
+                }
+            });
+            scope.close = function() {
+                elem.modal("hide");
+                scope.dismiss();
+            }
+        }
+    }
+});
+
 app.controller("WarlockCtrl", function($scope, $window, localStorageService) {
     if (localStorageService.isSupported()) {
         var data = localStorageService.get("wftmdata");
@@ -74,9 +99,9 @@ app.controller("WarlockCtrl", function($scope, $window, localStorageService) {
 
     $scope.addMonster = function() {
         $scope.Monsters.push({
-            Skill: 10,
-            Stamina: 12,
-            Name: '',
+            Skill: 6,
+            Stamina: 6,
+            Name: 'Monster ' + $scope.Monsters.length,
             Dead: false,
             Luck : false,
             Status : ''
@@ -90,23 +115,27 @@ app.controller("WarlockCtrl", function($scope, $window, localStorageService) {
         $scope.newPossession = null;
     }
 
+    $scope.deleteMonster = function(monster) {
+        if(!monster.Dead)
+            return;
+
+        var index = -1;
+        angular.forEach($scope.Monsters, function(m, i) {
+            if (m.Name == monster.Name) {
+                index = i;
+            }
+        });
+        if (index >= 0) {
+            $scope.Monsters.splice(index, 1);
+        }
+    }
+
+
     $scope.deletePossession = function(possession){
         var index = $scope.Possessions.indexOf(possession);
         if(index >= 0){
             $scope.Possessions.splice(index, 1);
         }
-    }
-
-    $scope.toggleLuck = function(monster) {
-        if($scope.Current.Luck <= 0)
-            return;
-        monster.Luck = !monster.Luck;
-    }
-
-    $scope.usingLuckClass = function(monster) {
-        if($scope.Current.Luck <= 0)
-            monster.Luck = false;
-        return monster.Luck ? "btn btn-danger" : "btn";
     }
 
     $scope.diceClass = function(num) {
@@ -169,9 +198,7 @@ app.controller("WarlockCtrl", function($scope, $window, localStorageService) {
                 }
             }
 
-            if ($scope.Current.Stamina <= 0) {
-                monster.Status = "Gah - you've been killed";
-            } else {
+            if ($scope.Current.Stamina > 0) {
                 monster.Status = 'Boo the monster wounded you!';
             }
         }

@@ -14,112 +14,123 @@
             <a class="btn" ng-click="eat()">Eat</a>
             <a class="btn" ng-disabled="Current.Luck <= 0" ng-click="testLuck()">Test Luck</a>
         </div>
-        <h2>Warlock of Firetop Mountain</h1>
+        <h2>Warlock of Firetop Mountain</h2>
 
-        <div class="row">
+        <div class="row-fluid">
             <div class="span2">
-                <fieldset>
-                    <legend>Initial Scores</legend>
-                    <h4>Stamina: {{Initial.Stamina}}</h4>
-                    <h4>Skill: {{Initial.Skill}}</h4>
-                    <h4>Luck: {{Initial.Luck}}</h4>
-                    <h4>Provisions: {{Initial.Provisions}}</h4>
-                </fieldset> 
+                <h4><u>Initial Scores</u></h4>
+                <h4>Stamina: {{Initial.Stamina}}</h4>
+                <h4>Skill: {{Initial.Skill}}</h4>
+                <h4>Luck: {{Initial.Luck}}</h4>
+                <h4>Provisions: {{Initial.Provisions}}</h4>
             </div>
 
             <div class="span4">
-                <fieldset>
-                    <legend>Possessions</legend>
-                    <div class="input-append">
-                        <input type="text" placeholder="Add possession" ng-model="newPossession" />
-                        <a class="btn" ng-click="addPossession(newPossession)">Add</a>
-                    </div>
-                    <div class="well" style="max-height:200px; overflow:auto">
-                        <div ng-repeat="possession in Possessions" class="alert alert-danger">{{possession}}<a class="close" ng-click="deletePossession(possession)" >&times;</a></div>
-                    </div>
-                </fieldset> 
+                <h4><u>Possessions</u></h4>
+                <div class="input-append">
+                    <input type="text" placeholder="Add possession" ng-model="newPossession" />
+                    <a class="btn" ng-click="addPossession(newPossession)">Add</a>
+                </div>
+                <div class="well" style="max-height:200px; overflow:auto">
+                    <div ng-repeat="possession in Possessions" class="alert alert-danger">{{possession}}<a class="close" ng-click="deletePossession(possession)" >&times;</a></div>
+                </div>
             </div>
         
             <div class="span6">
-                <fieldset>
-                    <legend>Current Scores</legend>
-                    <table class="table table-condensed">
-                        <tr>
-                            <td>Stamina</td>    
-                            <td colspan="2">
-                                <div class="input-append">
-                                    <input type="number" ng-model="Current.Stamina" ng-change="changeVal('Stamina')" /> 
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Skill</td> 
-                            <td colspan="2"><input type="number" ng-model="Current.Skill" ng-change="changeVal('Skill')"/></td>    
-                        </tr>
-                        <tr ng-style="luckyOrNot">
-                            <td>Luck</td>    
-                            <td>
-                                <input type="number" ng-model="Current.Luck" ng-change="changeVal('Luck')"/>
-                            </td>
-                            <td style="width:100px">
-                                <div ng-show="luckScore != null">
-                                    <div ng-class="diceClass(luckScore.roll1)"></div>
-                                    <div ng-class="diceClass(luckScore.roll2)"></div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Provisions</td>    
-                            <td colspan="2"><input type="number" readonly="true" ng-model="Current.Provisions"/></td>
-                        </tr>
-                    </table>
-                </fieldset>
-            </div>
-        </div>
-    
-        <div class="row">
-            <div class="span12">
-                <a href="" class="btn" ng-click="addMonster()">Monster!</a>
-                <p></p>
-                <table ng-show="Monsters.length > 0" class="table table-condensed">
+                <h4><u>Current Scores</u></h4>
+                <table class="table table-condensed">
                     <tr>
-                        <th>Name</th>
-                        <th>Skill</th>
-                        <th>Stamina</th>
-                        <th></th>
+                        <td>Stamina</td>    
+                        <td colspan="2">
+                            <div class="input-append">
+                                <input type="number" ng-model="Current.Stamina" ng-change="changeVal('Stamina')" /> 
+                            </div>
+                        </td>
                     </tr>
-                    <tbody ng-disabled="monster.Dead" ng-repeat="monster in Monsters">
-                        <tr>
-                            <td><input ng-disabled="monster.Dead" type="text" placeholder="Enter monster name" ng-model="monster.Name" /></td>
-                            <td><input ng-disabled="monster.Dead" type="number" ng-model="monster.Skill" /></td>
-                            <td><input ng-disabled="monster.Dead" type="number" ng-model="monster.Stamina" /></td>
-                            <td><a ng-disabled="monster.Dead" href="" class="btn" ng-click="fightMonster(monster)">Fight!</a></td>
-                        </tr>
-                        <tr ng-show="!monster.Dead && monster.Round != null" >
-                            <td>
-                                <h4> Your attack score is {{monster.Round.you.score}}</h4>  
-                                <div ng-class="diceClass(monster.Round.you.roll1)"></div>
-                                <div ng-class="diceClass(monster.Round.you.roll2)"></div>
-                            </td>
-                            <td>
-                                <h4> {{monster.Name}} attack score is {{monster.Round.monster.score}}</h4>
-                                <div ng-class="diceClass(monster.Round.monster.roll1)"></div>
-                                <div ng-class="diceClass(monster.Round.monster.roll2)"></div>
-                            </td>
-                            <td colspan="2">
-                                <h4>{{monster.Status}}</h4>
-                                <div><a ng-disabled="monster.Dead || Current.Luck <= 0 || monster.Round.Complete" title="click this button to test your luck" href="" class="btn" ng-click="monster.Round.TestLuck()">Test Luck</a></div>
-                            </td>
-                        </tr>
-                    </tbody>
+                    <tr>
+                        <td>Skill</td> 
+                        <td colspan="2"><input type="number" ng-model="Current.Skill" ng-change="changeVal('Skill')"/></td>    
+                    </tr>
+                    <tr ng-style="luckyOrNot">
+                        <td>Luck</td>    
+                        <td>
+                            <input type="number" ng-model="Current.Luck" ng-change="changeVal('Luck')"/>
+                        </td>
+                        <td style="width:100px">
+                            <div ng-show="luckScore != null">
+                                <div ng-class="diceClass(luckScore.roll1)"></div>
+                                <div ng-class="diceClass(luckScore.roll2)"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Provisions</td>    
+                        <td colspan="2"><input type="number" readonly="true" ng-model="Current.Provisions"/></td>
+                    </tr>
                 </table>
             </div>
         </div>
-    </div>
+    
+        <div class="row-fluid">
+            <div class="span12">
+                <a href="" class="btn" ng-click="addMonster()">Monster!</a>
+                <p></p>
+
+                <div class="well well-small" ng-repeat="monster in Monsters" ng-disabled="monster.Dead">
+                    <div class="row-fluid">
+                        <div class="span3">
+                            <h4>Name</h4>
+                        </div>
+                        <div class="span3">
+                            <h4>Skill</h4>
+                        </div>
+                        <div class="span6">
+                            <h4>Stamina</h4>
+                        </div>
+                    </div>
+                    <div class="row-fluid">
+                        <div class="span3">
+                            <input ng-disabled="monster.Dead" type="text" placeholder="Enter monster name" ng-model="monster.Name" />
+                        </div>
+                        <div class="span3">
+                            <input ng-disabled="monster.Dead" type="number" ng-model="monster.Skill" />
+                        </div>
+                        <div class="span6">
+                            <input ng-disabled="monster.Dead" type="number" ng-model="monster.Stamina" />
+                            <a ng-disabled="!monster.Dead" href="" class="btn pull-right" ng-click="deleteMonster(monster)">Delete</a>
+                            <a style="margin-right:5px" ng-disabled="monster.Dead" href="" class="btn pull-right" ng-click="fightMonster(monster)">Fight!</a>
+                        </div>
+                    </div>
+                    <div class="row-fluid" ng-show="!monster.Dead && monster.Round != null">
+                        <div class="span3">
+                            <h5> Your attack score is {{monster.Round.you.score}}</h5>  
+                            <div ng-class="diceClass(monster.Round.you.roll1)"></div>
+                            <div ng-class="diceClass(monster.Round.you.roll2)"></div>
+                        </div>
+                        <div class="span3">
+                            <h5> {{monster.Name}} attack score is {{monster.Round.monster.score}}</h5>
+                            <div ng-class="diceClass(monster.Round.monster.roll1)"></div>
+                            <div ng-class="diceClass(monster.Round.monster.roll2)"></div>
+                        </div>
+                        <div class="span6">
+                            <h5>{{monster.Status}}</h5>
+                            <div><a ng-disabled="monster.Dead || Current.Luck <= 0 || monster.Round.Complete" title="click this button to test your luck" href="" class="btn" ng-click="monster.Round.TestLuck()">Test Luck</a></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="dead" ng-modal="Current.Stamina" 
+             title="You've been killed" 
+             content="Your quest is over for now, but you might have better luck next time" 
+             dismiss="newGame()" 
+             dismiss-button="New Game" />
 
 </body>
 <script src="Scripts/jquery-1.9.1.js" type="text/javascript"></script>
-    <script src="Scripts/angular.js" type="text/javascript"></script>
-    <script src="Scripts/localStorageModule.js" type="text/javascript"></script>
-    <script type="text/javascript" src="Scripts/app.js"></script>
+<script src="Scripts/bootstrap.js" type="text/javascript"></script>
+<script src="Scripts/angular.js" type="text/javascript"></script>
+<script src="Scripts/localStorageModule.js" type="text/javascript"></script>
+<script type="text/javascript" src="Scripts/app.js"></script>
 </html>
