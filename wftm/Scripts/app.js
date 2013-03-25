@@ -169,7 +169,7 @@ app.controller("WarlockCtrl", function($scope, $window, localStorageService) {
                 monster.Dead = true;
                 monster.Status = 'Hurrah you killed the monster';
             } else {
-                monster.Status = 'Hurrah you wounded the monster!';
+                monster.Status = 'Hurrah you wounded the monster!'; 
                 if($scope.Current.Luck > 0){
                     monster.Round.TestLuck = function(){
                         if (monster.Round.Complete)
