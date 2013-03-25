@@ -60,6 +60,7 @@
     <Content Include="Content\images\glyphicons-halflings-white.png" />
     <Content Include="Content\images\glyphicons-halflings.png" />
     <Content Include="index.html" />
+    <Content Include="karma.conf.js" />
     <Content Include="Scripts\angular-bootstrap-prettify.js" />
     <Content Include="Scripts\angular-bootstrap-prettify.min.js" />
     <Content Include="Scripts\angular-bootstrap.js" />
@@ -241,6 +242,7 @@
     <Content Include="Scripts\jstd-scenario-adapter.js" />
     <Content Include="Scripts\localStorageModule.js" />
     <Content Include="Templates\monster.html" />
+    <Content Include="tests.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

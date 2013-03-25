@@ -1,5 +1,15 @@
 ﻿var app = angular.module("App", ["LocalStorageModule"]);
 
+app.factory("dice", function() {
+    return {
+        roll: function() {
+            var min = 1;
+            var max = 6;
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+    };
+});
+
 app.directive("monster", function() {
     return {
         restrict : "E",
@@ -33,7 +43,7 @@ app.directive("ngModal", function() {
     }
 });
 
-app.controller("WarlockCtrl", function($scope, $window, localStorageService) {
+app.controller("WarlockCtrl", function($scope, localStorageService, dice) {
     if (localStorageService.isSupported()) {
         var data = localStorageService.get("wftmdata");
         if (data != null) {
@@ -62,8 +72,8 @@ app.controller("WarlockCtrl", function($scope, $window, localStorageService) {
 
     $scope.lucky = function(){
         $scope.luckScore = {
-            roll1 : rollDice(),
-            roll2 : rollDice()
+            roll1 : dice.roll(),
+            roll2 : dice.roll()
         }
         var luck = $scope.Current.Luck;
         $scope.Current.Luck -= 1;
@@ -94,9 +104,9 @@ app.controller("WarlockCtrl", function($scope, $window, localStorageService) {
 
     function initialise() {
         $scope.Initial = {
-            Stamina: rollDice() + rollDice() + 12,
-            Skill: rollDice() + 6,
-            Luck: rollDice() + 6,
+            Stamina: dice.roll() + dice.roll() + 12,
+            Skill: dice.roll() + 6,
+            Luck: dice.roll() + 6,
             Provisions: 10
         };    
         $scope.Monsters = [];
@@ -156,12 +166,12 @@ app.controller("WarlockCtrl", function($scope, $window, localStorageService) {
 
         monster.Round = {
             you: {
-                roll1: rollDice(),
-                roll2: rollDice()
+                roll1: dice.roll(),
+                roll2: dice.roll()
             },
             monster: {
-                roll1: rollDice(),
-                roll2: rollDice()
+                roll1: dice.roll(),
+                roll2: dice.roll()
             },
             Complete : false
         }
@@ -239,11 +249,5 @@ app.controller("WarlockCtrl", function($scope, $window, localStorageService) {
             $scope.changeVal("Stamina");
             $scope.Current.Provisions -= 1;
         }
-    }
-
-    function rollDice() {
-        var min = 1;
-        var max = 6;
-        return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 });
