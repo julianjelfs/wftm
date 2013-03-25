@@ -172,6 +172,9 @@ app.controller("WarlockCtrl", function($scope, $window, localStorageService) {
                 monster.Status = 'Hurrah you wounded the monster!';
                 if($scope.Current.Luck > 0){
                     monster.Round.TestLuck = function(){
+                        if (monster.Round.Complete)
+                            return;
+                        
                         if($scope.lucky()){
                             monster.Stamina -= 2;
                             monster.Status = "You were lucky!";
@@ -187,7 +190,9 @@ app.controller("WarlockCtrl", function($scope, $window, localStorageService) {
         if (monster.Round.you.score < monster.Round.monster.score) {
             $scope.Current.Stamina -= 2;
             if($scope.Current.Luck > 0){
-                monster.Round.TestLuck = function(){
+                monster.Round.TestLuck = function() {
+                    if (monster.Round.Complete)
+                        return;
                     if($scope.lucky()){
                         $scope.Current.Stamina += 1;
                         monster.Status = "You were lucky!";
@@ -200,6 +205,11 @@ app.controller("WarlockCtrl", function($scope, $window, localStorageService) {
 
             if ($scope.Current.Stamina > 0) {
                 monster.Status = 'Boo the monster wounded you!';
+            } else {
+                //we are dead at this point. If we have any luck left we should try 
+                //testing our luck automatically because it may save our life
+                if(monster.Round.TestLuck != null)
+                    monster.Round.TestLuck();
             }
         }
 
