@@ -4,7 +4,7 @@ app.directive("monster", function() {
     return {
         restrict : "E",
         replace : true,
-        templateUrl : "/Templates/monster.html"
+        templateUrl : "Templates/monster.html"
     }
 });
 
