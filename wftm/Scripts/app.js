@@ -1,5 +1,13 @@
 ﻿var app = angular.module("App", ["LocalStorageModule"]);
 
+app.directive("monster", function() {
+    return {
+        restrict : "E",
+        replace : true,
+        templateUrl : "/Templates/monster.html"
+    }
+});
+
 app.directive("ngModal", function() {
     return {
         replace : true,
