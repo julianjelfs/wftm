@@ -1,8 +1,18 @@
 {
-	'devDependencies': {
-	  'testacular': '~0.6'
+	"name" : "wftm",
+	"description" : "Warlock of firetop mountain game tracker",
+	"author": "Julian Jelfs <julian.jelfs@gmail.com>",
+	"devDependencies": {
+	  "karma": "~0.8"
 	},
-	'scripts': {
-	   'test': './node_modules/.bin/karma start --single-run --browsers PhantomJS'
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/julianjelfs/wftm.git"
+	},
+	"engines": {
+		"node": "~0.8 || ~0.10"
+	},
+	"scripts": {
+	   "test": "./node_modules/.bin/karma start --single-run --browsers PhantomJS"
 	}
 }
