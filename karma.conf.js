@@ -10,23 +10,23 @@ basePath = 'wftm';
 files = [
   JASMINE,
   JASMINE_ADAPTER,
-  'scripts/angular.js',
-  'scripts/angular-mocks.js',
-  'scripts/localstoragemodule.js',
-  'scripts/app.js',
+  'Scripts/angular.js',
+  'Scripts/angular-mocks.js',
+  'Scripts/localstoragemodule.js',
+  'Scripts/app.js',
   'tests.js'
 ];
 
 
 // list of files to exclude
 exclude = [
-  'scripts/bootstrap.js'
+  'Scripts/bootstrap.js'
 ];
 
 
 // test results reporter to use
 // possible values: 'dots', 'progress', 'junit'
-reporters = ['dots'];
+reporters = ['progress'];
 
 
 // web server port
