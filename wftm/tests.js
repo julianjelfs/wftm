@@ -49,7 +49,7 @@
 
     describe("warlock controller", function() {
         var scope, localStorage = {
-            isSupported : function (){},
+            isSupported : function () { return false; },
             get : function (key){},
             remove : function (key){},
             add : function (key, val){}
@@ -79,7 +79,7 @@
         }
 
         it("should initialise correctly when local storage not available", function() {
-            spyOn(localStorage, "isSupported").andReturn(false);
+            spyOn(localStorage, "isSupported");
             ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
             verifyCleanState();
         });
@@ -112,7 +112,7 @@
         });
 
         it("should test luck correctly when roll == luck", function() {
-            spyOn(localStorage, "isSupported").andReturn(false);
+            spyOn(localStorage, "isSupported");
             ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
             scope.Current.Luck = 12;
             var lucky = scope.lucky();
@@ -122,7 +122,7 @@
         });
         
         it("should test luck correctly when roll < luck", function() {
-            spyOn(localStorage, "isSupported").andReturn(false);
+            spyOn(localStorage, "isSupported");
             ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
             scope.Current.Luck = 13;
             var lucky = scope.lucky();
@@ -132,7 +132,7 @@
         });
         
         it("should test luck correctly when roll > luck", function() {
-            spyOn(localStorage, "isSupported").andReturn(false);
+            spyOn(localStorage, "isSupported");
             ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
             scope.Current.Luck = 10;    
             var lucky = scope.lucky();
@@ -142,7 +142,7 @@
         });
 
         it("should not test luck if current luck <= 0", function() {
-            spyOn(localStorage, "isSupported").andReturn(false);
+            spyOn(localStorage, "isSupported");
             ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
             scope.Current.Luck = 0;
             scope.testLuck();
@@ -153,7 +153,7 @@
         });
 
         it("should clear local storage and initialise on calling newGame", function() {
-            spyOn(localStorage, "isSupported").andReturn(false);
+            spyOn(localStorage, "isSupported");
             spyOn(localStorage, "remove");
             ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
             scope.newGame();
@@ -162,7 +162,7 @@
         });
 
         it("should not save state if local storage is not supported", function() {
-            spyOn(localStorage, "isSupported").andReturn(false);
+            spyOn(localStorage, "isSupported");
             spyOn(localStorage, "get");
             spyOn(localStorage, "add");
             spyOn(localStorage, "remove");
@@ -188,7 +188,7 @@
         });
 
         it("should add a new monster with default values", function() {
-            spyOn(localStorage, "isSupported").andReturn(false);
+            spyOn(localStorage, "isSupported");
             ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
             scope.addMonster();
             expect(scope.Monsters.length).toBe(1);
@@ -199,6 +199,203 @@
             expect(m.Dead).toBe(false);
             expect(m.Luck).toBe(false);
             expect(m.Status).toBe('');
+        });
+
+        it("should not add empty possessions to the list", function() {
+            ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
+            scope.addPossession(null);
+            expect(scope.Possessions.length).toBe(0);
+        });
+
+        it("should add a new possessions to the list", function() {
+            ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
+            scope.addPossession("map");
+            expect(scope.Possessions.length).toBe(1);
+            expect(scope.Possessions[0]).toBe("map");
+            expect(scope.newPossession).toBe(null);
+        });
+
+        it("should delete monster by matching name", function() {
+            ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
+            scope.addMonster();
+            scope.addMonster();
+            scope.Monsters[0].Dead = true;
+            expect(scope.Monsters[0].Name).toBe("Monster 0");
+            expect(scope.Monsters.length).toBe(2);
+            scope.deleteMonster(scope.Monsters[0]);
+            expect(scope.Monsters.length).toBe(1);
+            expect(scope.Monsters[0].Name).toBe("Monster 1");
+        });
+
+        it("should only delete a dead monster", function() {
+            ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
+            scope.addMonster();
+            expect(scope.Monsters.length).toBe(1);
+            scope.deleteMonster(scope.Monsters[0]);
+            expect(scope.Monsters.length).toBe(1);  
+        });
+
+        it("should delete possessions correctly", function() {
+            ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
+            scope.addPossession("map");
+            scope.addPossession("compass");
+            scope.addPossession("penknife");
+            expect(scope.Possessions.length).toBe(3);
+            scope.deletePossession("compass");
+            expect(scope.Possessions.length).toBe(2);
+            expect(scope.Possessions.indexOf("compass")).toBe(-1);
+        });
+
+        it("should return the correct dice css class", function() {
+            ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
+            expect(scope.diceClass(1)).toBe("dice dice1");
+            expect(scope.diceClass(6)).toBe("dice dice6");
+        });
+
+        it("should not be possible to exceed initial values for stamina, luck or skill", function() {
+            ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
+            function checkProp(prop) {
+                scope.Current[prop] = 50;
+                scope.changeVal(prop);
+                expect(scope.Current[prop]).toBe(scope.Initial[prop]);
+                scope.Current[prop] = 1;
+                scope.changeVal(prop);
+                expect(scope.Current[prop]).toBe(1);
+            }
+            checkProp("Stamina");
+            checkProp("Skill");
+            checkProp("Luck");
+        });
+
+        it("should increase stamina if you eat provisions", function() {
+            ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
+            scope.Current.Stamina = 10;
+            expect(scope.Current.Provisions).toBe(10);
+            scope.eat();
+            expect(scope.Current.Provisions).toBe(9);
+            expect(scope.Current.Stamina).toBe(14); 
+        });
+
+        it("should not be possible to eat if you have no provisions", function() {
+            ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
+            scope.Current.Stamina = 10;
+            scope.Current.Provisions = 0;
+            scope.eat();
+            expect(scope.Current.Provisions).toBe(0);
+            expect(scope.Current.Stamina).toBe(10); 
+        });
+        
+        it("should not be possible to eat if you have max stamina", function() {
+            ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
+            scope.eat();
+            expect(scope.Current.Provisions).toBe(10);
+            expect(scope.Current.Stamina).toBe(24);
+        });
+        
+        it("should not be possible to exceed max stamina by eating", function() {
+            ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
+            scope.Current.Stamina = 22;
+            scope.eat();
+            expect(scope.Current.Provisions).toBe(9);
+            expect(scope.Current.Stamina).toBe(24);
+        });
+
+        describe("monster battling", function() {
+            var monster;
+            
+            beforeEach(function() {
+                ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
+                scope.addMonster();
+                monster = scope.Monsters[0];
+            });
+
+            it("should reduce stamina by 2 if you are wounded by the monster", function() {
+                monster.Skill = 50; //no way we can win
+                expect(scope.Current.Stamina).toBe(24);
+                scope.fightMonster(monster);
+                expect(scope.Current.Stamina).toBe(22);
+                expect(monster.Stamina).toBe(6);
+                expect(monster.Status).toBe("Boo the monster wounded you!");
+            });
+            
+            it("should reduce monster stamina by 2 if you wound the monster", function() {
+                expect(scope.Current.Stamina).toBe(24);
+                expect(monster.Stamina).toBe(6);
+                scope.fightMonster(monster);
+                expect(scope.Current.Stamina).toBe(24);
+                expect(monster.Stamina).toBe(4);
+                expect(monster.Status).toBe("Hurrah you wounded the monster!");
+            });
+            
+            it("should record the monster as dead if its stamina < 0", function() {
+                monster.Stamina = 2;
+                expect(monster.Dead).toBe(false);
+                scope.fightMonster(monster);
+                expect(monster.Stamina).toBe(0);
+                expect(monster.Dead).toBe(true);
+                expect(monster.Status).toBe("Hurrah you killed the monster");
+            });
+
+            it("should automatically test luck if the monster kills us", function() {
+                monster.Skill = 50;
+                scope.Current.Stamina = 2;
+                expect(scope.Current.Luck).toBe(12);
+                scope.fightMonster(monster);
+                expect(scope.Current.Stamina).toBe(1);
+                expect(scope.Current.Luck).toBe(11);
+            });
+
+            it("should allow me to mitigate injury using luck if I'm lucky", function() {
+                monster.Skill = 50; //no way we can win
+                scope.fightMonster(monster);
+                expect(scope.Current.Stamina).toBe(22);
+                expect(monster.Round.TestLuck).not.toBe(undefined);
+                monster.Round.TestLuck();
+                expect(scope.Current.Stamina).toBe(23);
+                expect(scope.Current.Luck).toBe(11);
+                expect(monster.Round.Complete).toBe(true);
+            });
+            
+            it("should fail to mitigate injury using luck if I'm not lucky", function() {
+                monster.Skill = 50; //no way we can win
+                scope.Current.Luck = 2;
+                scope.fightMonster(monster);
+                expect(scope.Current.Stamina).toBe(22);
+                expect(monster.Round.TestLuck).not.toBe(undefined);
+                monster.Round.TestLuck();
+                expect(scope.Current.Stamina).toBe(22);
+                expect(scope.Current.Luck).toBe(1);
+                expect(monster.Round.Complete).toBe(true);
+            });
+            
+            it("should not allow me to use luck if I don't have any", function() {
+                monster.Skill = 50; //no way we can win
+                scope.Current.Luck = 0;
+                scope.fightMonster(monster);
+                expect(monster.Round.TestLuck).toBe(undefined);
+            });
+            
+            it("should allow me to compound monster injury using luck if I'm lucky", function() {
+                scope.fightMonster(monster);
+                expect(monster.Stamina).toBe(4);
+                expect(monster.Round.TestLuck).not.toBe(undefined);
+                monster.Round.TestLuck();
+                expect(monster.Stamina).toBe(2);
+                expect(scope.Current.Luck).toBe(11);
+                expect(monster.Round.Complete).toBe(true);
+            });
+            
+            it("should fail to compound monster injury using luck if I'm not lucky", function() {
+                scope.Current.Luck = 2;
+                scope.fightMonster(monster);
+                expect(monster.Stamina).toBe(4);
+                expect(monster.Round.TestLuck).not.toBe(undefined);
+                monster.Round.TestLuck();
+                expect(monster.Stamina).toBe(4);
+                expect(scope.Current.Luck).toBe(1);
+                expect(monster.Round.Complete).toBe(true);
+            });
+
         });
     });
 

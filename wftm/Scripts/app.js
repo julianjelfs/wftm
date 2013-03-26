@@ -127,7 +127,7 @@ app.controller("WarlockCtrl", function($scope, localStorageService, dice) {
     }
 
     $scope.addPossession = function(possession){
-        if($scope.newPossession == null)
+        if(possession == null)
             return;
         $scope.Possessions.push(possession);
         $scope.newPossession = null;
