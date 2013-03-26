@@ -12,7 +12,7 @@ files = [
   JASMINE_ADAPTER,
   'Scripts/angular.js',
   'Scripts/angular-mocks.js',
-  'Scripts/localstoragemodule.js',
+  'Scripts/localStorageModule.js',
   'Scripts/app.js',
   'tests.js'
 ];
