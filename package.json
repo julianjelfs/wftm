@@ -1,7 +1,8 @@
-'devDependencies': {
-  'testacular': '~0.6'
-},
-// ...snip...
-'scripts': {
-   'test': './node_modules/.bin/karma start --single-run --browsers PhantomJS'
+{
+	'devDependencies': {
+	  'testacular': '~0.6'
+	},
+	'scripts': {
+	   'test': './node_modules/.bin/karma start --single-run --browsers PhantomJS'
+	}
 }
