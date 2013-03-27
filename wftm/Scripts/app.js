@@ -51,7 +51,7 @@ app.controller("WarlockCtrl", function($scope, localStorageService, dice) {
             $scope.Initial = data.Initial;
             $scope.Current = data.Current;
             $scope.Monsters = data.Monsters;
-            $scope.Possessions = data.Possessions;sdfsdfsdfds
+            $scope.Possessions = data.Possessions;
         } else {
             initialise();
         }
