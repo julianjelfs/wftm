@@ -240,6 +240,9 @@ app.controller("WarlockCtrl", function($scope, localStorageService, dice) {
         if ($scope.Current[prop] > $scope.Initial[prop]) {
             $scope.Current[prop] = $scope.Initial[prop];
         }
+        if ($scope.Current[prop] < 0) {
+            $scope.Current[prop] = 0;
+        }
     }
 
     $scope.eat = function() {

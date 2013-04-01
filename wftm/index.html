@@ -11,7 +11,7 @@
         <div class="pull-right btn-group">
             <a class="btn" ng-show="supportSave()" ng-click="save()">Save Game</a>
             <a class="btn" ng-show="supportSave()" ng-click="newGame()">New Game</a>
-            <a class="btn" ng-click="eat()">Eat</a>
+            <a class="btn" ng-disabled="Current.Provisions <= 0" ng-click="eat()">Eat</a>
             <a class="btn" ng-disabled="Current.Luck <= 0" ng-click="testLuck()">Test Luck</a>
         </div>
         <h2>Warlock of Firetop Mountain</h2>
@@ -41,9 +41,13 @@
                 <table class="table table-condensed">
                     <tr>
                         <td>Stamina</td>    
-                        <td colspan="2">
-                            <div class="input-append">
-                                <input type="number" ng-model="Current.Stamina" ng-change="changeVal('Stamina')" /> 
+                        <td>
+                            <input type="text"  readonly="true" ng-model="Current.Stamina" />
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <button class="btn" ng-click="Current.Stamina = Current.Stamina+1;changeVal('Stamina')"><i class="icon-arrow-up"></i></button>
+                                <button class="btn"  ng-click="Current.Stamina = Current.Stamina-1;changeVal('Stamina')"><i class="icon-arrow-down"></i></button> 
                             </div>
                         </td>
                     </tr>

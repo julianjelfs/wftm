@@ -264,6 +264,18 @@
             }
             checkProp("Stamina");
             checkProp("Skill");
+            checkProp("Luck");  
+        });
+
+        it("should not be possible to decrease values below zero", function() {
+            ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
+            function checkProp(prop) {
+                scope.Current[prop] = -1;
+                scope.changeVal(prop);
+                expect(scope.Current[prop]).toBe(0);
+            }
+            checkProp("Stamina");
+            checkProp("Skill");
             checkProp("Luck");
         });
 
