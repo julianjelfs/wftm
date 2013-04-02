@@ -7,7 +7,7 @@
 </head>
 <body style="padding:10px" ng-app="App" ng-controller="WarlockCtrl">
     
-    <div class="container well" ng-cloak >
+    <div class="container well" ng-style="mainStyle()" ng-cloak >
 
         <div class="pull-right btn-group">
             <a class="btn" ng-show="supportSave()" ng-click="save()">Save Game</a>
@@ -37,57 +37,63 @@
                 </div>
             </div>
         
-            <div class="span6">
+            <div class="span6 scores">
                 <h4><u>Current Scores</u></h4>
-                <table class="table table-condensed">
-                    <tr>
-                        <td>Stamina</td>    
-                        <td>
-                            <input type="text"  readonly="true" ng-model="Current.Stamina" />
-                        </td>
-                        <td>
-                            <div class="btn-group">
-                                <button class="btn" ng-click="Current.Stamina = Current.Stamina+1;changeVal('Stamina')"><i class="icon-arrow-up"></i></button>
-                                <button class="btn"  ng-click="Current.Stamina = Current.Stamina-1;changeVal('Stamina')"><i class="icon-arrow-down"></i></button> 
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Skill</td> 
-                        <td colspan="2"><input type="number" ng-model="Current.Skill" ng-change="changeVal('Skill')"/></td>    
-                    </tr>
-                    <tr ng-style="luckyOrNot">
-                        <td>Luck</td>    
-                        <td>
-                            <input type="number" ng-model="Current.Luck" ng-change="changeVal('Luck')"/>
-                        </td>
-                        <td style="width:100px">
-                            <div ng-show="luckScore != null">
-                                <div ng-class="diceClass(luckScore.roll1)"></div>
-                                <div ng-class="diceClass(luckScore.roll2)"></div>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Provisions</td>    
-                        <td colspan="2"><input type="number" readonly="true" ng-model="Current.Provisions"/></td>
-                    </tr>
-                    <tr>
-                        <td>Gold Coins</td>
-                        <td colspan="2"><input type="number" ng-model="Current.GoldCoins"/></td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button class="btn" ng-click="rollDice()">Roll Dice</button>
-                        </td>
-                        <td colspan="2">
-                            <div ng-show="manualRoll != null">
-                                <div ng-class="diceClass(manualRoll.roll1)"></div>
-                                <div ng-class="diceClass(manualRoll.roll2)"></div>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
+                <div class="row-fluid">
+                    <div class="span3">
+                        Stamina
+                    </div>
+                    <div class="span6">
+                        <input type="text"  readonly="true" ng-model="Current.Stamina" />
+                    </div>
+                    <div class="span3">
+                        <div class="btn-group">
+                            <button class="btn" ng-disabled="Current.Stamina >= Initial.Stamina" ng-click="Current.Stamina = Current.Stamina+1;changeVal('Stamina')"><i class="icon-arrow-up"></i></button>
+                            <button class="btn" ng-disabled="Current.Stamina <= 0"  ng-click="Current.Stamina = Current.Stamina-1;changeVal('Stamina')"><i class="icon-arrow-down"></i></button> 
+                        </div>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span3">Skill</div>
+                    <div class="span9">
+                        <input type="number" ng-model="Current.Skill" ng-change="changeVal('Skill')"/>
+                    </div>
+                </div>
+                <div class="row-fluid" ng-style="luckyOrNot">
+                    <div class="span3">Luck</div>
+                    <div class="span6">
+                        <input type="number" ng-model="Current.Luck" ng-change="changeVal('Luck')"/>
+                    </div>
+                    <div class="span3">
+                        <div ng-show="luckScore != null">
+                            <div ng-class="diceClass(luckScore.roll1)"></div>
+                            <div ng-class="diceClass(luckScore.roll2)"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span3">Provisions</div>
+                    <div class="span9">
+                        <input type="number" readonly="true" ng-model="Current.Provisions"/>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span3">Gold Coins</div>
+                    <div class="span9">
+                        <input type="number" ng-model="Current.GoldCoins"/>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span3">
+                        <button class="btn" ng-click="rollDice()">Roll Dice</button>
+                    </div>
+                    <div class="span9">
+                        <div ng-show="manualRoll != null">
+                            <div ng-class="diceClass(manualRoll.roll1)"></div>
+                            <div ng-class="diceClass(manualRoll.roll2)"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     

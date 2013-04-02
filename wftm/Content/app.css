@@ -10,3 +10,8 @@ div.dice3 { background-position: -66px 0px; }
 div.dice4 { background-position: 0px -34px; }
 div.dice5 { background-position: -35px -34px; }
 div.dice6 { background-position: -68px -34px; }
+
+div.scores div.row-fluid {
+	padding-top: 2px;
+	padding-left: 2px;
+}

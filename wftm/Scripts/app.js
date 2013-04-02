@@ -67,6 +67,18 @@ app.controller("WarlockCtrl", function($scope, $window, localStorageService, dic
         }
         autoSaveHandler = $window.setInterval(function() { $scope.save(); }, 1000);
     }
+    
+    $scope.mainStyle = function() {
+        if ($scope.Current.Stamina > 2) {
+            return { backgroundColor : "auto"};
+        }
+        if ($scope.Current.Stamina == 2) {
+            return { backgroundColor: "#ff9999" };
+        }
+        if ($scope.Current.Stamina == 1) {
+            return { backgroundColor: "#ff0000" };
+        }
+    }
 
     $scope.supportSave = function(){
         return localStorageService.isSupported();
