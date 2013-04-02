@@ -53,7 +53,11 @@
             get : function (key){},
             remove : function (key){},
             add : function (key, val){}
-        }, ctrl, dice = {roll : function (){}}, controller;
+        }, ctrl, dice = {roll : function (){}}, controller, 
+            win = {
+                setInterval : function () { return 0; },
+                clearInterval : function (handle){}
+            };
 
         beforeEach(inject(function($rootScope, $controller) {
             scope = $rootScope.$new();
@@ -81,14 +85,14 @@
 
         it("should initialise correctly when local storage not available", function() {
             spyOn(localStorage, "isSupported");
-            ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
+            ctrl = new controller('WarlockCtrl', { $scope: scope, $window: win, localStorageService: localStorage, dice : dice });
             verifyCleanState();
         });
 
         it("should initialise correctly when local storage is available but empty", function() {
             spyOn(localStorage, "isSupported").andReturn(true);
             spyOn(localStorage, "get").andReturn(null);
-            ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
+            ctrl = new controller('WarlockCtrl', { $scope: scope, $window: win, localStorageService: localStorage, dice : dice });
             expect(localStorage.get).toHaveBeenCalled();
             verifyCleanState();
         });
@@ -96,7 +100,7 @@
         it("should load from local storage when available", function() {
             spyOn(localStorage, "isSupported").andReturn(true);
             spyOn(localStorage, "get").andReturn(JSON.stringify(testState));
-            ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
+            ctrl = new controller('WarlockCtrl', { $scope: scope, $window: win, localStorageService: localStorage, dice : dice });
             expect(localStorage.get).toHaveBeenCalled();
             expect(scope.Current.Stamina).toEqual(18);
             expect(scope.Initial.Stamina).toEqual(20);
@@ -106,7 +110,7 @@
 
         it("should report whether local storage is supported", function() {
             spyOn(localStorage, "isSupported").andReturn(true);
-            ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
+            ctrl = new controller('WarlockCtrl', { $scope: scope, $window: win, localStorageService: localStorage, dice : dice });
             expect(scope.supportSave).not.toBe(null);
             expect(scope.supportSave()).toBe(true);
             expect(localStorage.isSupported).toHaveBeenCalled();
@@ -114,7 +118,7 @@
 
         it("should test luck correctly when roll == luck", function() {
             spyOn(localStorage, "isSupported");
-            ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
+            ctrl = new controller('WarlockCtrl', { $scope: scope, $window: win, localStorageService: localStorage, dice : dice });
             scope.Current.Luck = 12;
             var lucky = scope.lucky();
             expect(lucky).toBe(true);
@@ -124,7 +128,7 @@
         
         it("should test luck correctly when roll < luck", function() {
             spyOn(localStorage, "isSupported");
-            ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
+            ctrl = new controller('WarlockCtrl', { $scope: scope, $window: win, localStorageService: localStorage, dice : dice });
             scope.Current.Luck = 13;
             var lucky = scope.lucky();
             expect(lucky).toBe(true);
@@ -134,7 +138,7 @@
         
         it("should test luck correctly when roll > luck", function() {
             spyOn(localStorage, "isSupported");
-            ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
+            ctrl = new controller('WarlockCtrl', { $scope: scope, $window: win, localStorageService: localStorage, dice : dice });
             scope.Current.Luck = 10;    
             var lucky = scope.lucky();
             expect(lucky).toBe(false);
@@ -144,7 +148,7 @@
 
         it("should not test luck if current luck <= 0", function() {
             spyOn(localStorage, "isSupported");
-            ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
+            ctrl = new controller('WarlockCtrl', { $scope: scope, $window: win, localStorageService: localStorage, dice : dice });
             scope.Current.Luck = 0;
             scope.testLuck();
             expect(scope.Current.Luck).toBe(0);
@@ -156,7 +160,7 @@
         it("should clear local storage and initialise on calling newGame", function() {
             spyOn(localStorage, "isSupported");
             spyOn(localStorage, "remove");
-            ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
+            ctrl = new controller('WarlockCtrl', { $scope: scope, $window: win, localStorageService: localStorage, dice : dice });
             scope.newGame();
             expect(localStorage.remove).toHaveBeenCalledWith("wftmdata");
             verifyCleanState();
@@ -167,7 +171,7 @@
             spyOn(localStorage, "get");
             spyOn(localStorage, "add");
             spyOn(localStorage, "remove");
-            ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
+            ctrl = new controller('WarlockCtrl', { $scope: scope, $window: win, localStorageService: localStorage, dice : dice });
             scope.save();
             expect(localStorage.isSupported).toHaveBeenCalled();
             expect(localStorage.get).not.toHaveBeenCalled();
@@ -180,7 +184,7 @@
             spyOn(localStorage, "get").andReturn(JSON.stringify(testState));
             spyOn(localStorage, "add");
             spyOn(localStorage, "remove");
-            ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
+            ctrl = new controller('WarlockCtrl', { $scope: scope, $window: win, localStorageService: localStorage, dice : dice });
             scope.save();
             expect(localStorage.isSupported).toHaveBeenCalled();
             expect(localStorage.get).toHaveBeenCalledWith("wftmdata");
@@ -190,7 +194,7 @@
 
         it("should add a new monster with default values", function() {
             spyOn(localStorage, "isSupported");
-            ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
+            ctrl = new controller('WarlockCtrl', { $scope: scope, $window: win, localStorageService: localStorage, dice : dice });
             scope.addMonster();
             expect(scope.Monsters.length).toBe(1);
             var m = scope.Monsters[0];
@@ -203,13 +207,13 @@
         });
 
         it("should not add empty possessions to the list", function() {
-            ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
+            ctrl = new controller('WarlockCtrl', { $scope: scope, $window: win, localStorageService: localStorage, dice : dice });
             scope.addPossession(null);
             expect(scope.Possessions.length).toBe(0);
         });
 
         it("should add a new possessions to the list", function() {
-            ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
+            ctrl = new controller('WarlockCtrl', { $scope: scope, $window: win, localStorageService: localStorage, dice : dice });
             scope.addPossession("map");
             expect(scope.Possessions.length).toBe(1);
             expect(scope.Possessions[0]).toBe("map");
@@ -217,7 +221,7 @@
         });
 
         it("should delete monster by matching name", function() {
-            ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
+            ctrl = new controller('WarlockCtrl', { $scope: scope, $window: win, localStorageService: localStorage, dice : dice });
             scope.addMonster();
             scope.addMonster();
             scope.Monsters[0].Dead = true;
@@ -229,7 +233,7 @@
         });
 
         it("should only delete a dead monster", function() {
-            ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
+            ctrl = new controller('WarlockCtrl', { $scope: scope, $window: win, localStorageService: localStorage, dice : dice });
             scope.addMonster();
             expect(scope.Monsters.length).toBe(1);
             scope.deleteMonster(scope.Monsters[0]);
@@ -237,7 +241,7 @@
         });
 
         it("should delete possessions correctly", function() {
-            ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
+            ctrl = new controller('WarlockCtrl', { $scope: scope, $window: win, localStorageService: localStorage, dice : dice });
             scope.addPossession("map");
             scope.addPossession("compass");
             scope.addPossession("penknife");
@@ -248,13 +252,13 @@
         });
 
         it("should return the correct dice css class", function() {
-            ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
+            ctrl = new controller('WarlockCtrl', { $scope: scope, $window: win, localStorageService: localStorage, dice : dice });
             expect(scope.diceClass(1)).toBe("dice dice1");
             expect(scope.diceClass(6)).toBe("dice dice6");
         });
 
         it("should not be possible to exceed initial values for stamina, luck or skill", function() {
-            ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
+            ctrl = new controller('WarlockCtrl', { $scope: scope, $window: win, localStorageService: localStorage, dice : dice });
             function checkProp(prop) {
                 scope.Current[prop] = 50;
                 scope.changeVal(prop);
@@ -269,7 +273,7 @@
         });
 
         it("should not be possible to decrease values below zero", function() {
-            ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
+            ctrl = new controller('WarlockCtrl', { $scope: scope, $window: win, localStorageService: localStorage, dice : dice });
             function checkProp(prop) {
                 scope.Current[prop] = -1;
                 scope.changeVal(prop);
@@ -281,7 +285,7 @@
         });
 
         it("should increase stamina if you eat provisions", function() {
-            ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
+            ctrl = new controller('WarlockCtrl', { $scope: scope, $window: win, localStorageService: localStorage, dice : dice });
             scope.Current.Stamina = 10;
             expect(scope.Current.Provisions).toBe(10);
             scope.eat();
@@ -290,7 +294,7 @@
         });
 
         it("should not be possible to eat if you have no provisions", function() {
-            ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
+            ctrl = new controller('WarlockCtrl', { $scope: scope, $window: win, localStorageService: localStorage, dice : dice });
             scope.Current.Stamina = 10;
             scope.Current.Provisions = 0;
             scope.eat();
@@ -299,14 +303,14 @@
         });
         
         it("should not be possible to eat if you have max stamina", function() {
-            ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
+            ctrl = new controller('WarlockCtrl', { $scope: scope, $window: win, localStorageService: localStorage, dice : dice });
             scope.eat();
             expect(scope.Current.Provisions).toBe(10);
             expect(scope.Current.Stamina).toBe(24);
         });
         
         it("should not be possible to exceed max stamina by eating", function() {
-            ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
+            ctrl = new controller('WarlockCtrl', { $scope: scope, $window: win, localStorageService: localStorage, dice : dice });
             scope.Current.Stamina = 22;
             scope.eat();
             expect(scope.Current.Provisions).toBe(9);
@@ -317,7 +321,7 @@
             var monster;
             
             beforeEach(function() {
-                ctrl = new controller('WarlockCtrl', { $scope: scope, localStorageService: localStorage, dice : dice });
+                ctrl = new controller('WarlockCtrl', { $scope: scope, $window: win, localStorageService: localStorage, dice : dice });
                 scope.addMonster();
                 monster = scope.Monsters[0];
             });

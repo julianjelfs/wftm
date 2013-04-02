@@ -43,7 +43,8 @@ app.directive("ngModal", function() {
     }
 });
 
-app.controller("WarlockCtrl", function($scope, localStorageService, dice) {
+app.controller("WarlockCtrl", function($scope, $window, localStorageService, dice) {
+    var autoSaveHandler;
     if (localStorageService.isSupported()) {
         var data = localStorageService.get("wftmdata");
         if (data != null) {
@@ -52,11 +53,19 @@ app.controller("WarlockCtrl", function($scope, localStorageService, dice) {
             $scope.Current = data.Current;
             $scope.Monsters = data.Monsters;
             $scope.Possessions = data.Possessions;
+            initialiseAutosave();
         } else {
             initialise();
         }
     } else {
         initialise();
+    }
+    
+    function initialiseAutosave() {
+        if (autoSaveHandler != null) {
+            $window.clearInterval(autoSaveHandler);
+        }
+        autoSaveHandler = $window.setInterval(function() { $scope.save(); }, 1000);
     }
 
     $scope.supportSave = function(){
@@ -101,7 +110,7 @@ app.controller("WarlockCtrl", function($scope, localStorageService, dice) {
             localStorageService.add("wftmdata", JSON.stringify(data));
         }
     }
-
+    
     function initialise() {
         $scope.Initial = {
             Stamina: dice.roll() + dice.roll() + 12,
@@ -114,6 +123,7 @@ app.controller("WarlockCtrl", function($scope, localStorageService, dice) {
         $scope.Possessions = [];
         $scope.Current = angular.copy($scope.Initial);
         $scope.luckyOrNot = {backgroundColor : 'none'};
+        initialiseAutosave();
     }
 
     $scope.addMonster = function() {
