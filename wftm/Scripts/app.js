@@ -107,7 +107,8 @@ app.controller("WarlockCtrl", function($scope, localStorageService, dice) {
             Stamina: dice.roll() + dice.roll() + 12,
             Skill: dice.roll() + 6,
             Luck: dice.roll() + 6,
-            Provisions: 10
+            Provisions: 10,
+            GoldCoins : 0
         };    
         $scope.Monsters = [];
         $scope.Possessions = [];

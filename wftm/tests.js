@@ -67,6 +67,7 @@
             expect(obj.Skill).toEqual(12);
             expect(obj.Luck).toEqual(12);
             expect(obj.Provisions).toBe(10);
+            expect(obj.GoldCoins).toBe(0);
         }
         
         function verifyCleanState() {
