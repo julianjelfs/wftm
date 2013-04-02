@@ -145,6 +145,16 @@
             expect(scope.Current.Luck).toBe(9);
             expect(scope.luckyOrNot.backgroundColor).toBe("#ff6600");
         });
+        
+        it("should allow manual dice roll", function() {
+            spyOn(localStorage, "isSupported");
+            ctrl = new controller('WarlockCtrl', { $scope: scope, $window: win, localStorageService: localStorage, dice : dice });
+            expect(scope.manualRoll).toBe(undefined);
+            scope.rollDice();
+            expect(scope.manualRoll).not.toBe(undefined);
+            expect(scope.manualRoll.roll1).toBe(6);
+            expect(scope.manualRoll.roll2).toBe(6);
+        });
 
         it("should not test luck if current luck <= 0", function() {
             spyOn(localStorage, "isSupported");

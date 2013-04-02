@@ -78,6 +78,13 @@ app.controller("WarlockCtrl", function($scope, $window, localStorageService, dic
 
         $scope.lucky();
     }
+    
+    $scope.rollDice = function() {
+        $scope.manualRoll = {
+            roll1 : dice.roll(),
+            roll2 : dice.roll()
+        }
+    }
 
     $scope.lucky = function(){
         $scope.luckScore = {

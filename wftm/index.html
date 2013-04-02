@@ -8,6 +8,7 @@
 <body style="padding:10px" ng-app="App" ng-controller="WarlockCtrl">
     
     <div class="container well" ng-cloak >
+
         <div class="pull-right btn-group">
             <a class="btn" ng-show="supportSave()" ng-click="save()">Save Game</a>
             <a class="btn" ng-show="supportSave()" ng-click="newGame()">New Game</a>
@@ -74,6 +75,17 @@
                     <tr>
                         <td>Gold Coins</td>
                         <td colspan="2"><input type="number" ng-model="Current.GoldCoins"/></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <button class="btn" ng-click="rollDice()">Roll Dice</button>
+                        </td>
+                        <td colspan="2">
+                            <div ng-show="manualRoll != null">
+                                <div ng-class="diceClass(manualRoll.roll1)"></div>
+                                <div ng-class="diceClass(manualRoll.roll2)"></div>
+                            </div>
+                        </td>
                     </tr>
                 </table>
             </div>
