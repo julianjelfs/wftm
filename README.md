@@ -1,4 +1,4 @@
-Warlock of Firetop Mountain tracker
+Fighting fantasy adventure book tracker
 ===================================
 
 This is a silly app I created for my son to track scores throughout a fighting fantasy book 
