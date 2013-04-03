@@ -8,4 +8,4 @@ I just made this to try to get to grips with angularJS
 
 try it out
 ----------
-If you have a fighting fantasy book you can try it out [here](http://dl.dropbox.com/u/26218407/wftm/index.html"Demo").
+If you have a fighting fantasy book you can try it out [here](http://dl.dropbox.com/u/26218407/wftm/index.html).
