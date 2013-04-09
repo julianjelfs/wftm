@@ -1,4 +1,4 @@
-﻿<div class="well well-small" ng-repeat="monster in Monsters" ng-disabled="monster.Dead">
+﻿<div class="monster well well-small" ng-repeat="monster in Monsters" ng-disabled="monster.Dead">
     <div class="row-fluid">
         <div class="span3">
             <h4>Name</h4>
@@ -17,8 +17,10 @@
         <div class="span3">
             <input ng-disabled="monster.Dead" type="number" ng-model="monster.Skill" />
         </div>
-        <div class="span6">
+        <div class="span3">
             <input ng-disabled="monster.Dead" type="number" ng-model="monster.Stamina" />
+        </div>
+        <div class="span3">
             <a ng-disabled="!monster.Dead" href="" class="btn pull-right" ng-click="deleteMonster(monster)">Delete</a>
             <a style="margin-right:5px" ng-disabled="monster.Dead" href="" class="btn pull-right" ng-click="fightMonster(monster)">Fight!</a>
         </div>

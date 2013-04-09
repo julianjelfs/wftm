@@ -43,7 +43,7 @@ app.directive("ngModal", function() {
     }
 });
 
-app.controller("WarlockCtrl", function($scope, $window, localStorageService, dice) {
+app.controller("WarlockCtrl", function($scope, $window, $timeout, localStorageService, dice) {
     var autoSaveHandler;
     if (localStorageService.isSupported()) {
         var data = localStorageService.get("wftmdata");
@@ -147,7 +147,44 @@ app.controller("WarlockCtrl", function($scope, $window, localStorageService, dic
     }
     
     $scope.intro = function() {
-        introJs().start();
+        //we need to tag up a monster entry with help strings
+        var monster, addedMonster = false;
+        function kickOffTutorial() {
+            monster = angular.element("div.monster:first");
+            
+            var monsterName = angular.element("div.row-fluid:eq(1) div:eq(0)", monster);
+            monsterName.attr("data-step", "11");
+            monsterName.attr("data-intro", "Enter a name for your monster if you like");
+            
+            var monsterSkill = angular.element("div.row-fluid:eq(1) div:eq(1)", monster);
+            monsterSkill.attr("data-step", "12");
+            monsterSkill.attr("data-intro", "Enter the skill score for this monster");
+            
+            var monsterStamina = angular.element("div.row-fluid:eq(1) div:eq(2)", monster);
+            monsterStamina.attr("data-step", "13");
+            monsterStamina.attr("data-intro", "Enter the stamina score for this monster");
+            
+            var fight = angular.element("div.row-fluid:eq(1) div:eq(3)", monster);
+            fight.attr("data-step", "14");
+            fight.attr("data-intro", "Click here to fight! You attack scores will be calculated automatically and your stamina scores automatically adjusted according to who wins the round. After the round, you can also test your luck to modify the results of the round. If you kill the monster, click delete to remove the row.");
+        
+            introJs().oncomplete(function() {
+                if (addedMonster) {
+                    $scope.$apply(function() {
+                        $scope.Monsters = [];
+                    });
+                }
+            }).start();
+        }
+        
+        if ($scope.Monsters.length === 0) {
+            $scope.addMonster();
+            addedMonster = true;
+            $timeout(kickOffTutorial, 0);
+        } else {
+            kickOffTutorial();
+        }
+            
     }
 
     $scope.addMonster = function() {
