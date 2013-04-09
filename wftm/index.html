@@ -4,21 +4,23 @@
     <title></title>
     <link href="Content/bootstrap.css" rel="stylesheet" type="text/css" />
     <link href="Content/app.css" rel="stylesheet" type="text/css" />
+    <link href="Content/intro.css" rel="stylesheet" type="text/css" />
 </head>
 <body style="padding:10px" ng-app="App" ng-controller="WarlockCtrl">
     
     <div class="container well" ng-style="mainStyle()" ng-cloak >
 
         <div class="pull-right btn-group">
-            <a class="btn" ng-show="supportSave()" ng-click="save()">Save Game</a>
-            <a class="btn" ng-show="supportSave()" ng-click="newGame()">New Game</a>
-            <a class="btn" ng-disabled="Current.Provisions <= 0" ng-click="eat()">Eat</a>
-            <a class="btn" ng-disabled="Current.Luck <= 0" ng-click="testLuck()">Test Luck</a>
+            <a class="btn" ng-show="supportSave()" ng-click="save()" data-step="2" data-intro="Save the progress of your game at any time so that you can come back to it another time">Save Game</a>
+            <a class="btn" ng-show="supportSave()" ng-click="newGame()" data-step="3" data-intro="Generate new intial scores and start a new game">New Game</a>
+            <a class="btn" ng-disabled="Current.Provisions <= 0" ng-click="eat()" data-step="4" data-intro="If you are running low on stamina and have provisions, you can click this button to eat when the book tells you it's safe to do so">Eat</a>
+            <a class="btn" ng-disabled="Current.Luck <= 0" ng-click="testLuck()" data-step="5" data-intro="Click here to test your luck when told to do so. Note that this not used for testing luck during battles">Test Luck</a>
+            <a class="btn" ng-click="intro()">Help &nbsp;<i class="icon-question-sign"></i></a>
         </div>
         <h2>Fighting Fantasy</h2>
 
         <div class="row-fluid">
-            <div class="span2">
+            <div class="span2" data-step="1" data-intro="These are your randomly generated initial scores. If you want to cheat you could press the New Game button until you get good scores. ">
                 <h4><u>Initial Scores</u></h4>
                 <h4>Stamina: {{Initial.Stamina}}</h4>
                 <h4>Skill: {{Initial.Skill}}</h4>
@@ -26,7 +28,7 @@
                 <h4>Provisions: {{Initial.Provisions}}</h4>
             </div>
 
-            <div class="span4">
+            <div class="span4" data-step="6" data-intro="This is your equipment list. Add anything intersting you find along the way in here so you don't forget it">
                 <h4><u>Equipment</u></h4>
                 <div class="input-append">
                     <input type="text" placeholder="Add equipment" ng-model="newPossession" />
@@ -38,54 +40,60 @@
             </div>
         
             <div class="span6 scores">
-                <h4><u>Current Scores</u></h4>
-                <div class="row-fluid">
-                    <div class="span3">
-                        Stamina
+                <div data-step="7" data-intro="These are your current scores which you should adjust as you go along as directed by the book.">
+                    <h4><u>Current Scores</u></h4>
+                    <div class="row-fluid">
+                        <div class="span3">
+                            Stamina
+                        </div>
+                        <div class="span6">
+                            <input type="text"  readonly="true" ng-model="Current.Stamina" />
+                        </div>
+                        <div class="span3">
+                            <div class="btn-group">
+                                <button class="btn" ng-disabled="Current.Stamina >= Initial.Stamina" ng-click="Current.Stamina = Current.Stamina+1;changeVal('Stamina')"><i class="icon-arrow-up"></i></button>
+                                <button class="btn" ng-disabled="Current.Stamina <= 0"  ng-click="Current.Stamina = Current.Stamina-1;changeVal('Stamina')"><i class="icon-arrow-down"></i></button> 
+                            </div>
+                        </div>
                     </div>
-                    <div class="span6">
-                        <input type="text"  readonly="true" ng-model="Current.Stamina" />
+                    <div class="row-fluid">
+                        <div class="span3">Skill</div>
+                        <div class="span9">
+                            <input type="number" ng-model="Current.Skill" ng-change="changeVal('Skill')"/>
+                        </div>
                     </div>
-                    <div class="span3">
-                        <div class="btn-group">
-                            <button class="btn" ng-disabled="Current.Stamina >= Initial.Stamina" ng-click="Current.Stamina = Current.Stamina+1;changeVal('Stamina')"><i class="icon-arrow-up"></i></button>
-                            <button class="btn" ng-disabled="Current.Stamina <= 0"  ng-click="Current.Stamina = Current.Stamina-1;changeVal('Stamina')"><i class="icon-arrow-down"></i></button> 
+                    <div class="row-fluid" ng-style="luckyOrNot">
+                        <div class="span3">Luck</div>
+                        <div class="span6">
+                            <input type="number" ng-model="Current.Luck" ng-change="changeVal('Luck')"/>
+                        </div>
+                        <div class="span3">
+                            <div ng-show="luckScore != null">
+                                <div ng-class="diceClass(luckScore.roll1)"></div>
+                                <div ng-class="diceClass(luckScore.roll2)"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row-fluid">
+                        <div class="span3">Provisions</div>
+                        <div class="span9">
+                            <input type="number" readonly="true" ng-model="Current.Provisions"/>
                         </div>
                     </div>
                 </div>
-                <div class="row-fluid">
-                    <div class="span3">Skill</div>
-                    <div class="span9">
-                        <input type="number" ng-model="Current.Skill" ng-change="changeVal('Skill')"/>
-                    </div>
-                </div>
-                <div class="row-fluid" ng-style="luckyOrNot">
-                    <div class="span3">Luck</div>
-                    <div class="span6">
-                        <input type="number" ng-model="Current.Luck" ng-change="changeVal('Luck')"/>
-                    </div>
-                    <div class="span3">
-                        <div ng-show="luckScore != null">
-                            <div ng-class="diceClass(luckScore.roll1)"></div>
-                            <div ng-class="diceClass(luckScore.roll2)"></div>
+                
+                <div data-step="8" data-intro="This is to track your gold coins">
+                    <div class="row-fluid">
+                        <div class="span3">Gold Coins</div>
+                        <div class="span9">
+                            <input type="number" ng-model="Current.GoldCoins"/>
                         </div>
                     </div>
                 </div>
-                <div class="row-fluid">
-                    <div class="span3">Provisions</div>
-                    <div class="span9">
-                        <input type="number" readonly="true" ng-model="Current.Provisions"/>
-                    </div>
-                </div>
-                <div class="row-fluid">
-                    <div class="span3">Gold Coins</div>
-                    <div class="span9">
-                        <input type="number" ng-model="Current.GoldCoins"/>
-                    </div>
-                </div>
+
                 <div class="row-fluid">
                     <div class="span3">
-                        <button class="btn" ng-click="rollDice()">Roll Dice</button>
+                        <button data-step="9" data-intro="Press this button if you need to do a manual dice roll for any reason" class="btn" ng-click="rollDice()">Roll Dice</button>
                     </div>
                     <div class="span9">
                         <div ng-show="manualRoll != null">
@@ -99,9 +107,9 @@
     
         <div class="row-fluid">
             <div class="span12">
-                <a href="" class="btn" ng-click="addMonster()">Monster!</a>
+                <a data-step="10" data-intro="Click this button (one or more times) when you encounter a monster that you need to fight in the book" href="" class="btn" ng-click="addMonster()">Monster!</a>
                 <p></p>
-                
+        
                 <monster ng-repeat="monster in Monsters"></monster>
 
             </div>
@@ -117,6 +125,7 @@
 <script src="Scripts/jquery-1.9.1.js" type="text/javascript"></script>
 <script src="Scripts/bootstrap.js" type="text/javascript"></script>
 <script src="Scripts/angular.js" type="text/javascript"></script>
+<script src="Scripts/intro.js" type="text/javascript"></script>
 <script src="Scripts/localStorageModule.js" type="text/javascript"></script>
 <script type="text/javascript" src="Scripts/app.js"></script>
 </html>

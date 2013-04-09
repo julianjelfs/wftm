@@ -53,14 +53,14 @@ app.controller("WarlockCtrl", function($scope, $window, localStorageService, dic
             $scope.Current = data.Current;
             $scope.Monsters = data.Monsters;
             $scope.Possessions = data.Possessions;
-            initialiseAutosave();
+            //initialiseAutosave();
         } else {
             initialise();
         }
     } else {
         initialise();
     }
-    
+
     function initialiseAutosave() {
         if (autoSaveHandler != null) {
             $window.clearInterval(autoSaveHandler);
@@ -137,12 +137,17 @@ app.controller("WarlockCtrl", function($scope, $window, localStorageService, dic
             Luck: dice.roll() + 6,
             Provisions: 10,
             GoldCoins : 0
-        };    
+        };
+        
         $scope.Monsters = [];
         $scope.Possessions = [];
         $scope.Current = angular.copy($scope.Initial);
         $scope.luckyOrNot = {backgroundColor : 'none'};
-        initialiseAutosave();
+        //initialiseAutosave();
+    }
+    
+    $scope.intro = function() {
+        introJs().start();
     }
 
     $scope.addMonster = function() {
